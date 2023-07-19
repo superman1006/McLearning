@@ -4,6 +4,11 @@ import numpy as np
 
 
 def normalize(features):
+    """
+    归一化操作:公式为 (x - mean) / deviation
+    :param features: 特征值
+    :return: 归一化后的特征值,均值,标准差
+    """
 
     features_normalized = np.copy(features).astype(float)
 
