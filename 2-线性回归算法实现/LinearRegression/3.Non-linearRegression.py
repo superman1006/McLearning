@@ -1,22 +1,23 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-
 from LinearRegressionModule import LinearRegression
 
-data = pd.read_csv('../data/non-linear-regression-x-y.csv')
+# 非线性回归很少用
 
+
+data = pd.read_csv('../data/non-linear-regression-x-y.csv')
 x = data['x'].values.reshape((data.shape[0], 1))
 y = data['y'].values.reshape((data.shape[0], 1))
-
 data.head(10)
-
 plt.plot(x, y)
 plt.show()
 
 num_iterations = 50000
 learning_rate = 0.02
+# 多项式的阶数
 polynomial_degree = 15
+# 正弦函数的阶数
 sinusoid_degree = 15
 normalize_data = True
 
