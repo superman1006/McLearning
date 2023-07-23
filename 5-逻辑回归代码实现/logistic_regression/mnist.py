@@ -22,10 +22,10 @@ for plot_index in range(numbers_to_display):
 
     # 正方形的
     image_size = int(math.sqrt(digit_pixels.shape[0]))
-    
+
     # 转换成图像形式
     frame = digit_pixels.reshape((image_size, image_size))
-    
+
     # 展示图像
     plt.subplot(num_cells, num_cells, plot_index + 1)
     plt.imshow(frame, cmap='Greys')
@@ -51,10 +51,10 @@ x_test = test_data[:, 1:]
 y_test = test_data[:, [0]]
 
 # 训练参数
-max_iterations = 10000  
-polynomial_degree = 0  
-sinusoid_degree = 0  
-normalize_data = True  
+max_iterations = 10000
+polynomial_degree = 0
+sinusoid_degree = 0
+normalize_data = True
 
 # 逻辑回归
 logistic_regression = LogisticRegression(x_train, y_train, polynomial_degree, sinusoid_degree, normalize_data)
@@ -79,10 +79,10 @@ for plot_index in range(numbers_to_display):
 
     # Calculate image size (remember that each picture has square proportions).
     image_size = int(math.sqrt(digit_pixels.shape[0]))
-    
+
     # Convert image vector into the matrix of pixels.
     frame = digit_pixels.reshape((image_size, image_size))
-    
+
     # Plot the number matrix.
     plt.subplot(num_cells, num_cells, plot_index + 1)
     plt.imshow(frame, cmap='Greys')
@@ -127,16 +127,16 @@ for plot_index in range(numbers_to_display):
     # Extrace digit data.
     digit_label = y_test[plot_index, 0]
     digit_pixels = x_test[plot_index, :]
-    
+
     # Predicted label.
     predicted_label = y_test_predictions[plot_index][0]
 
     # Calculate image size (remember that each picture has square proportions).
     image_size = int(math.sqrt(digit_pixels.shape[0]))
-    
+
     # Convert image vector into the matrix of pixels.
     frame = digit_pixels.reshape((image_size, image_size))
-    
+
     # Plot the number matrix.
     color_map = 'Greens' if predicted_label == digit_label else 'Reds'
     plt.subplot(num_cells, num_cells, plot_index + 1)
