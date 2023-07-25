@@ -1,8 +1,10 @@
 # -*- coding: UTF-8 -*-
-from matplotlib.font_manager import FontProperties
+
 import matplotlib.pyplot as plt
 from math import log
 import operator
+# 导入鸢尾花数据集
+from sklearn.datasets import load_iris
 
 
 def createDataSet():
@@ -31,20 +33,22 @@ def createTree(dataset, labels, featLabels):
         return classList[0]
     if len(dataset[0]) == 1:
         return majorityCnt(classList)
-    bestFeat = chooseBestFeatureToSplit(dataset)
-    bestFeatLabel = labels[bestFeat]
-    featLabels.append(bestFeatLabel)
-    myTree = {bestFeatLabel: {}}
-    del labels[bestFeat]
-    featValue = [example[bestFeat] for example in dataset]
+    bestFeat_Index = chooseBestFeatureToSplit(dataset)
+    bestFeat_Name = labels[bestFeat_Index]
+    featLabels.append(bestFeat_Name)
+    myTree = {bestFeat_Name: {}}
+    del labels[bestFeat_Index]
+    # 计算当前特征包含的所有属性值,比如说F1-AGE有三个属性值0,1,2
+    featValue = [example[bestFeat_Index] for example in dataset]
     uniqueVals = set(featValue)
     for value in uniqueVals:
         sublabels = labels[:]
-        myTree[bestFeatLabel][value] = createTree(splitDataSet(dataset, bestFeat, value), sublabels, featLabels)
+        myTree[bestFeat_Name][value] = createTree(splitDataSet(dataset, bestFeat_Index, value), sublabels, featLabels)
     return myTree
 
 
 def majorityCnt(classList):
+    # 选择出现次数最多的一个结果
     classCount = {}
     for vote in classList:
         if vote not in classCount.keys(): classCount[vote] = 0
@@ -54,6 +58,7 @@ def majorityCnt(classList):
 
 
 def chooseBestFeatureToSplit(dataset):
+    # 选择最好的数据集划分方式
     numFeatures = len(dataset[0]) - 1
     baseEntropy = calcShannonEnt(dataset)
     bestInfoGain = 0
@@ -67,13 +72,14 @@ def chooseBestFeatureToSplit(dataset):
             prob = len(subDataSet) / float(len(dataset))
             newEntropy += prob * calcShannonEnt(subDataSet)
         infoGain = baseEntropy - newEntropy
-        if (infoGain > bestInfoGain):
+        if infoGain > bestInfoGain:
             bestInfoGain = infoGain
             bestFeature = i
     return bestFeature
 
 
 def splitDataSet(dataset, axis, val):
+    # 按照给定特征划分数据集
     retDataSet = []
     for featVec in dataset:
         if featVec[axis] == val:
@@ -84,6 +90,7 @@ def splitDataSet(dataset, axis, val):
 
 
 def calcShannonEnt(dataset):
+    # 计算香农熵
     numexamples = len(dataset)
     labelCounts = {}
     for featVec in dataset:
@@ -100,6 +107,7 @@ def calcShannonEnt(dataset):
 
 
 def getNumLeafs(myTree):
+    # 获取决策树叶结点数目
     numLeafs = 0
     firstStr = next(iter(myTree))
     secondDict = myTree[firstStr]
@@ -112,6 +120,7 @@ def getNumLeafs(myTree):
 
 
 def getTreeDepth(myTree):
+    # 获取决策树层数
     maxDepth = 0
     firstStr = next(iter(myTree))
     secondDict = myTree[firstStr]
@@ -127,8 +136,8 @@ def getTreeDepth(myTree):
 
 def plotNode(nodeTxt, centerPt, parentPt, nodeType):
     arrow_args = dict(arrowstyle="<-")
-    font = FontProperties(fname=r"c:\windows\fonts\simsunb.ttf", size=14)
-    createPlot.ax1.annotate(nodeTxt, xy=parentPt, xycoords='axes fraction', xytext=centerPt, textcoords='axes fraction', va="center", ha="center", bbox=nodeType, arrowprops=arrow_args, FontProperties=font)
+    createPlot.ax1.annotate(nodeTxt, xy=parentPt, xycoords='axes fraction', xytext=centerPt, textcoords='axes fraction',
+                            va="center", ha="center", bbox=nodeType, arrowprops=arrow_args)
 
 
 def plotMidText(cntrPt, parentPt, txtString):
