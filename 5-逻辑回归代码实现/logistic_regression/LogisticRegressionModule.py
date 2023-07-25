@@ -41,7 +41,7 @@ class LogisticRegression:
         num_features = self.data.shape[1]
         # 计算出目标值label的去掉重复值之后的个数,也就是记录这次逻辑回归的结果有几个类别
         num_unique_labels = self.unique_labels.shape[0]
-        # 初始化参数矩阵theta,为 列向量
+        # 初始化参数矩阵theta,每一次分类的theta都是行向量,都保存在这个矩阵中
         self.theta = np.zeros((num_unique_labels, num_features))
 
     def train(self, max_iterations=1000):
@@ -72,19 +72,22 @@ class LogisticRegression:
     def gradient_descent(self, data, labels, current_initial_theta, max_iterations):
         cost_history = []
         num_features = data.shape[1]
+        # 使用scipy中的minimize函数进行梯度下降,得到使得损失函数 minimize 时的的theta,
+        # return结果的是一个对象,其中x属性就是theta,fun属性就是损失值,success属性就是是否成功
+
         result = minimize(
-            # 第一个参数,要优化的目标：
-            lambda current_theta: self.cost_function(data, labels, current_theta.reshape(num_features, 1)),
-            # 第二个参数,初始化的权重参数
-            current_initial_theta,
-            # 第三个参数,选择优化策略
+            # 第一个参数,目标函数
+            fun=lambda current_theta: self.cost_function(data, labels, current_theta.reshape(num_features, 1)),
+            # 第二个参数,最初始的theta值
+            x0=current_initial_theta,
+            # 第三个参数,选择优化策略,CG代表共轭梯度下降法
             method='CG',
             # 第四个参数,梯度下降迭代计算公式
             jac=lambda current_theta: self.gradient_step(data, labels, current_theta.reshape(num_features, 1)),
-            # 第五个参数,记录结果
+            # 第五个参数,每次迭代之后的回调函数,用于保存每次迭代之后的损失值
             callback=lambda current_theta: cost_history.append(
                 self.cost_function(data, labels, current_theta.reshape((num_features, 1)))),
-            # 第六个参数,迭代次数
+            # 第六个参数,最大迭代次数
             options={'maxiter': max_iterations}
         )
         if not result.success:
@@ -97,15 +100,6 @@ class LogisticRegression:
         梯度下降参数theta更新的计算方法，注意是矩阵运算
         逻辑回归中使用的梯度下降的方法的是随机梯度下降
         """
-        # 批量梯度下降（Batch Gradient Descent，BGD）：
-        #   在批量梯度下降中，每次迭代时，使用所有训练样本来计算梯度并更新模型参数。这意味着
-        #   在每一步更新中，都要计算整个训练集的成本函数梯度。虽然这样做可能会产生高计算成本，但也有助于更稳定地朝向全局最优点收敛。
-
-        # 随机梯度下降（Stochastic Gradient Descent，SGD）：
-        #   在随机梯度下降中，每次迭代时，只使用一个随机的训练样本来计算梯度并更新模型参数。
-        #   由于每次更新仅基于一个样本，因此这种方法的计算成本较低。然而，由于梯度估计的随机性，SGD在收敛过程中可能会产生较大的波动。
-        #   为了缓解这个问题，通常采用学习率衰减（learning rate decay）
-        #   或者采用小批量梯度下降（Mini-batch Gradient Descent），即每次迭代使用一小批样本的平均梯度。
 
         # 样本个数
         num_examples = labels.shape[0]
@@ -114,21 +108,27 @@ class LogisticRegression:
         # 求出预测值和真实值之间的差值
         delta = predictions - labels
         theta = (1 / num_examples) * np.dot(data.T, delta)
-        # 这里计算后得到的gradients是一个列向量包含所有的特征的梯度值，也就是每一个特征的th
+        # 这里计算后得到的gradients是一个列向量包含所有的特征的梯度值，也就是每一个特征的theta值
+        # .flatten()函数是将多维数组降位一维数组,也就是将gradients转换成行向量
         return theta.T.flatten()
 
     def cost_function(self, data, labels, theta):
         """
         :param data:数据集的自变量的数据
         :param labels:数据集中的因变量的数据
-        :param theta:参数矩阵
+        :param theta:参数矩阵,传入的参数要求是一个列向量
         :return:损失值
         """
         num_examples = data.shape[0]
         predictions = self.hypothesis(data, theta)
-        y_is_set_cost = np.dot(labels[labels == 1].T, np.log(predictions[labels == 1]))
-        y_is_not_set_cost = np.dot(1 - labels[labels == 0].T, np.log(1 - predictions[labels == 0]))
-        cost = (-1 / num_examples) * (y_is_set_cost + y_is_not_set_cost)
+        # 逻辑回归的损失函数
+        # y_is_one_cost存放的是y=1时的损失值
+        # labels[labels == 1]表示的是y=1的所有行
+        y_is_one_cost = (-1) * np.dot(labels[labels == 1].T, np.log(predictions[labels == 1]))
+        # y_is_zero_cost存放的是y=0时的损失值
+        y_is_zero_cost = (-1) * np.dot(1 - labels[labels == 0].T, np.log(1 - predictions[labels == 0]))
+        # 计算目标函数,也就是损失函数
+        cost = (1 / num_examples) * (y_is_one_cost + y_is_zero_cost)
         return cost
 
     @staticmethod
@@ -146,8 +146,8 @@ class LogisticRegression:
         用训练的参数模型，预测得到回归值结果
         """
         num_examples = data.shape[0]
-        data_processed = prepare_for_training(data, self.polynomial_degree, self.sinusoid_degree, self.normalize_data)[
-            0]
+        data_processed = \
+            prepare_for_training(data, self.polynomial_degree, self.sinusoid_degree, self.normalize_data)[0]
         prob = self.hypothesis(data_processed, self.theta.T)
         max_prob_index = np.argmax(prob, axis=1)
         class_prediction = np.empty(max_prob_index.shape, dtype=object)

@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 import math
 
-from logistic_regression import LogisticRegression
+from LogisticRegressionModule import LogisticRegression
 
 data = pd.read_csv('../data/mnist-demo.csv')
 

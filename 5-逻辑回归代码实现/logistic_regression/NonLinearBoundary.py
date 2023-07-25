@@ -3,7 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import math
 
-from logistic_regression import LogisticRegression
+from LogisticRegressionModule import LogisticRegression
 
 data = pd.read_csv('../data/microchips-tests.csv')
 
@@ -21,23 +21,22 @@ for validity in validities:
         data[y_axis][data['validity'] == validity],
         label=validity
     )
-  
+
 plt.xlabel(x_axis)
 plt.ylabel(y_axis)
 plt.title('Microchips Tests')
 plt.legend()
 plt.show()
 
-
 num_examples = data.shape[0]
 x_train = data[[x_axis, y_axis]].values.reshape((num_examples, 2))
 y_train = data['validity'].values.reshape((num_examples, 1))
 
 # 训练参数
-max_iterations = 100000  
-regularization_param = 0  
-polynomial_degree = 5  
-sinusoid_degree = 0  
+max_iterations = 100000
+regularization_param = 0
+polynomial_degree = 5
+sinusoid_degree = 0
 # 逻辑回归
 logistic_regression = LogisticRegression(x_train, y_train, polynomial_degree, sinusoid_degree)
 
@@ -66,7 +65,6 @@ y_train_predictions = logistic_regression.predict(x_train)
 precision = np.sum(y_train_predictions == y_train) / y_train.shape[0] * 100
 
 print('Training Precision: {:5.4f}%'.format(precision))
-
 
 num_examples = x_train.shape[0]
 samples = 150
