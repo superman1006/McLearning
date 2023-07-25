@@ -3,8 +3,7 @@
 import matplotlib.pyplot as plt
 from math import log
 import operator
-# 导入鸢尾花数据集
-from sklearn.datasets import load_iris
+
 
 
 def createDataSet():
