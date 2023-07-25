@@ -5,7 +5,6 @@ from math import log
 import operator
 
 
-
 def createDataSet():
     dataSet = [[0, 0, 0, 0, 'no'],
                [0, 0, 0, 1, 'no'],
