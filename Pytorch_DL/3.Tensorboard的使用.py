@@ -27,15 +27,19 @@ for i in range(100):
 
 
 # -----------------------------------------------------------------2. writer.add_image(tag = 标题, img_tensor, global_step,  dataformats='HWC')-----------------------------------------------------------------
-# 其中img_tensor要求图片为 torch.Tensor, numpy.array, string, blobname 其中的任意一种类型，所以不可以单独使用 PIL.Image 来读取图片
+# 其中img_tensor要求图片为 torch.Tensor(常用), numpy.array, string, blobname 其中的任意一种类型，所以不可以单独使用 PIL.Image 来读取图片
 # 其中的参数dataformats='HWC'表示图片数据的顺序，H代表高度，W代表宽度，C代表通道数，所以dataformats='HWC'表示图片的维度为高*宽*通道数
 
 # 读取图片的方法:
 #    1.使用 PIL 和 numpy组合起来读取图片:
-#            img_PIL = Image.open(img_path)      <class 'PIL.JpegImagePlugin.JpegImageFile'>
-#            img = np.array(img_PIL)             <class 'numpy.ndarray'>
+#           img_PIL = Image.open(img_path)               <class 'PIL.JpegImagePlugin.JpegImageFile'>
+#           img = np.array(img_PIL)                      <class 'numpy.ndarray'>
 #    2.使用cv2读取图片:
-#            img = cv2.imread(img_path)          <class 'numpy.ndarray'>
+#           img = cv2.imread(img_path)                   <class 'numpy.ndarray'>
+#    3.使用 PIL 和 ToTensor()读取图片:
+#           img_PIL = Image.open(img_path)               <class 'PIL.JpegImagePlugin.JpegImageFile'>
+#           ToTensor_classifier = transforms.ToTensor()
+#           img_tensor = ToTensor_classifier(img_PIL)    <class 'torch.Tensor'>
 
 
 # ------------------------------------1.使用PIL.Image和numpy组合起来读取图片------------------------------------
