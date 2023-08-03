@@ -6,8 +6,8 @@ import cv2
 # -----------------------------------------------------------------2. writer.add_scalar(tag = 标题, scalar_value = y值, global_step = x值)-----------------------------------------------------------------
 
 # 将logs文件删除，再在终端输入pip cache purge清除缓存，再运行程序
-# 创建一个写入器
-writer = SummaryWriter("logs")
+# 创建一个写入器,log_dir是logs文件的路径,filename_suffix是文件名的后缀
+writer = SummaryWriter(log_dir="logs", filename_suffix='_test_tensorboard')
 
 # 保存模型
 for i in range(100):
